@@ -25,7 +25,7 @@ func Main() int {
 	truecolorDefault := ansipixels.DetectColorMode().TrueColor
 	fTrueColor := flag.Bool("truecolor", truecolorDefault,
 		"Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)")
-	fFPS := flag.Float64("fps", 60, "Frames per second (ansipoixels rendering)")
+	fFPS := flag.Float64("fps", 60, "Frames per second (ansipixels rendering)")
 	cli.Main()
 	ap := ansipixels.NewAnsiPixels(*fFPS)
 	ap.TrueColor = *fTrueColor
