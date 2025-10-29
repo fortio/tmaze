@@ -40,7 +40,7 @@ func Main() int {
 		runes := []rune{'╱', '╲'}
 		for l := range ap.H {
 			if l > 0 {
-				ap.WriteString("\r\n") // no technically needed but helps copy paste
+				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
 			for range ap.W {
 				idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
