@@ -39,7 +39,7 @@ func Main() int {
 		ap.StartSyncMode()
 		runes := []rune{'╱', '╲'}
 		for range ap.H * ap.W {
-			idx := rand.IntN(len(runes))
+			idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 			ap.WriteRune(runes[idx])
 		}
 		ap.EndSyncMode()
