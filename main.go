@@ -1,5 +1,5 @@
-// NAME
-// DESCRIPTION
+// tmaze
+// Ansi pixels version of the C64 classic maze
 
 package main
 
@@ -55,7 +55,7 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		// Redraw/resize/do something here:
-		ap.WriteBoxed(ap.H/2-1, "Welcome to NAME!\n%dx%d\nQ to quit.", ap.W, ap.H)
+		ap.WriteBoxed(ap.H/2-1, "Welcome to tmaze!\n%dx%d\nQ to quit.", ap.W, ap.H)
 		// ...
 		ap.EndSyncMode()
 		return nil
