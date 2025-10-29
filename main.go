@@ -51,7 +51,7 @@ func Main() int {
 		return nil
 	}
 	_ = ap.OnResize() // initial draw.
-	st := State{ap: ap}
+	st := &State{ap: ap}
 	err := ap.FPSTicks(st.Tick)
 	if err != nil {
 		log.Infof("Exiting on %v", err)
