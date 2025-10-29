@@ -38,9 +38,14 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		runes := []rune{'╱', '╲'}
-		for range ap.H * ap.W {
-			idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
-			ap.WriteRune(runes[idx])
+		for l := range ap.H {
+			if l > 0 {
+				ap.WriteString("\r\n") // no technically needed but helps copy paste
+			}
+			for range ap.W {
+				idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
+				ap.WriteRune(runes[idx])
+			}
 		}
 		ap.EndSyncMode()
 		return nil
@@ -65,8 +70,8 @@ func (st *State) Tick() bool {
 		log.Infof("Exiting on %q", c)
 		return false
 	default:
-		log.Debugf("Input %q...", c)
-		// Do something
+		// Regen on any other key
+		_ = st.ap.OnResize()
 	}
 	return true
 }
