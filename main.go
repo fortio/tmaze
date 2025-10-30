@@ -18,7 +18,7 @@ func main() {
 	os.Exit(Main())
 }
 
-var runes []rune = []rune{'╱', '╲'}
+var runes = []rune{'╱', '╲'}
 
 type State struct {
 	ap       *ansipixels.AnsiPixels
