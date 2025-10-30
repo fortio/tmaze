@@ -75,7 +75,9 @@ func Main() int {
 			}
 		}
 		path := path(maze)
-		for _, c := range path {
+		for c := range path {
+			ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
+			ap.WriteFg(tcolor.Green.Color())
 			cur := maze[c[0]][c[1]]
 			ap.MoveCursor(c[1], c[0])
 			if rune(cur) == runes[0] {
@@ -83,8 +85,8 @@ func Main() int {
 			} else {
 				ap.WriteRune(runes[1])
 			}
+			ap.EndSyncMode()
 		}
-		ap.WriteFg(tcolor.Green.Color())
 		ap.EndSyncMode()
 		return nil
 	}
