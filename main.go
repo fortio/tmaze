@@ -95,14 +95,13 @@ func Main() int {
 func (st *State) drawPath() {
 	path := st.path()
 	st.ap.WriteFg(tcolor.Green.Color())
+	if st.mono {
+		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
+	}
 	for c := range path {
 		st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
-		if !st.showPath {
-
+		if !st.showPath && !st.mono {
 			st.EmitColor(0)
-			if st.mono {
-				st.ap.WriteFg(tcolor.RGBColor{255, 255, 255}.Color())
-			}
 		}
 		cur := st.maze[c[0]][c[1]]
 		st.ap.MoveCursor(c[1], c[0])
@@ -138,6 +137,7 @@ func (st *State) Tick() bool {
 		st.drawPath()
 	default:
 		// Regen on any other key
+		st.showPath = false
 		_ = st.ap.OnResize()
 	}
 	return true
