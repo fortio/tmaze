@@ -50,19 +50,25 @@ func Main() int {
 		// Debug the palette:
 		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
+		var idx int
 		for l := range ap.H {
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
 			for c := range ap.W {
 				st.EmitColor(l)
-				idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
-				if l == 0 || c+1 == ap.W {
-					idx = l + c + 1
-				} else if l+1 == ap.H || c == 0 {
-					idx = l + c
+				switch {
+				case l == 0 || c+1 == ap.W:
+					// top line or rightmost column
+					idx = (l + c + 1) % 2
+				case l+1 == ap.H || c == 0:
+					// bottom line or leftmost column
+					idx = (l + c) % 2
+				default:
+					// inside is random
+					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
-				ap.WriteRune(runes[idx%2])
+				ap.WriteRune(runes[idx])
 			}
 		}
 		ap.EndSyncMode()
