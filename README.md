@@ -35,9 +35,15 @@ In mono:
 ╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╲╱╱
 ```
 
-In color:
+In color ('C' key to toggle):
 
 ![Screenshot](screenshot.png)
+
+
+Hit 'P' (path) or 'S' to solve the maze (solver animation speed is controlled by `-fps` flag):
+
+![Solver Screenshot](solver.png)
+
 
 ## Install
 You can get the binary from [releases](https://github.com/fortio/tmaze/releases)
@@ -66,7 +72,7 @@ tmaze help
 
 flags:
   -fps float
-        Frames per second (ansipixels rendering) (default 60)
+        Frames per second (ansipixels rendering) (default 120)
   -mono
         Use monochrome mode
   -nl
