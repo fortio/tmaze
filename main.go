@@ -95,7 +95,7 @@ func Main() int {
 func (st *State) drawPath() {
 	path := st.path()
 	st.ap.WriteFg(tcolor.Green.Color())
-	if st.mono {
+	if !st.showPath && st.mono {
 		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
 	}
 	for c := range path {
@@ -138,6 +138,9 @@ func (st *State) Tick() bool {
 	default:
 		// Regen on any other key
 		st.showPath = false
+		if st.mono {
+			st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
+		}
 		_ = st.ap.OnResize()
 	}
 	return true
