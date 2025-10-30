@@ -97,7 +97,7 @@ func (st *State) drawPath() {
 		st.ap.WriteFg(tcolor.Green.Color())
 		cur := st.maze[c[0]][c[1]]
 		st.ap.MoveCursor(c[1], c[0])
-		if rune(cur) == runes[0] {
+		if cur == runes[0] {
 			st.ap.WriteRune(runes[0])
 		} else {
 			st.ap.WriteRune(runes[1])
@@ -113,7 +113,7 @@ func (st *State) clearPath() {
 		st.EmitColor(0)
 		cur := st.maze[c[0]][c[1]]
 		st.ap.MoveCursor(c[1], c[0])
-		if rune(cur) == runes[0] {
+		if cur == runes[0] {
 			st.ap.WriteRune(runes[0])
 		} else {
 			st.ap.WriteRune(runes[1])
