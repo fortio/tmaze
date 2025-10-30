@@ -56,6 +56,7 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		st.solver, st.solverDirection = [2]int{0, 0}, [2]int{1, 0}
+		st.ap.WriteString(tcolor.Reset)
 
 		// Debug the palette:
 		// ap.WriteString(tcolor.Inverse)
