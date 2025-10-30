@@ -94,7 +94,7 @@ func Main() int {
 
 func (st *State) drawPath() {
 	path := st.path()
-	st.ap.WriteFg(tcolor.Green.Color())
+	st.ap.WriteFg(tcolor.BrightGreen.Color())
 	if !st.showPath && st.mono {
 		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
 	}
