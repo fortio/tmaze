@@ -56,7 +56,8 @@ func Main() int {
 		var idx int
 		st.maze = make([][]rune, 0, ap.H)
 		for l := range ap.H {
-			st.maze = append(st.maze, make([]rune, 0, ap.W))
+			line := make([]rune, 0, ap.W)
+			st.maze[l] = line
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
