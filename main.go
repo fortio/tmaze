@@ -21,11 +21,13 @@ func main() {
 var runes = []rune{'╱', '╲'}
 
 type State struct {
-	ap       *ansipixels.AnsiPixels
-	mono     bool
-	newlines bool
-	showPath bool
-	maze     [][]rune
+	ap              *ansipixels.AnsiPixels
+	mono            bool
+	newlines        bool
+	showPath        bool
+	maze            [][]rune
+	solver          [2]int
+	solverDirection [2]int
 }
 
 func Main() int {
@@ -44,9 +46,11 @@ func Main() int {
 	ap.HideCursor()
 	defer ap.Restore()
 	st := &State{
-		ap:       ap,
-		mono:     *fMono,
-		newlines: *fNewLines,
+		ap:              ap,
+		mono:            *fMono,
+		newlines:        *fNewLines,
+		solver:          [2]int{0, 0},
+		solverDirection: [2]int{1, 0},
 	}
 	ap.OnResize = func() error {
 		ap.ClearScreen()
@@ -98,20 +102,19 @@ func (st *State) drawPath() {
 	if !st.showPath && st.mono {
 		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
 	}
-	for c := range path {
-		st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
-		if !st.showPath && !st.mono {
-			st.EmitColor(0)
-		}
-		cur := st.maze[c[0]][c[1]]
-		st.ap.MoveCursor(c[1], c[0])
-		if cur == runes[0] {
-			st.ap.WriteRune(runes[0])
-		} else {
-			st.ap.WriteRune(runes[1])
-		}
-		st.ap.EndSyncMode()
+	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
+	if !st.showPath && !st.mono {
+		st.EmitColor(0)
 	}
+	cur := st.maze[path[0]][path[1]]
+	st.ap.MoveCursor(path[1], path[0])
+	// if cur == runes[0] {
+	// 	st.ap.WriteRune(runes[0])
+	// } else {
+	// 	st.ap.WriteRune(runes[1])
+	// }
+	st.ap.WriteRune(cur)
+	st.ap.EndSyncMode()
 }
 
 func (st *State) EmitColor(_ int) {
@@ -125,6 +128,9 @@ func (st *State) EmitColor(_ int) {
 }
 
 func (st *State) Tick() bool {
+	if st.showPath {
+		st.drawPath()
+	}
 	if len(st.ap.Data) == 0 {
 		return true
 	}
@@ -134,9 +140,9 @@ func (st *State) Tick() bool {
 		return false
 	case 'P', 'p':
 		st.showPath = !st.showPath
-		st.drawPath()
 	default:
 		// Regen on any other key
+		st.ap.WriteString(tcolor.Reset)
 		st.showPath = false
 		if st.mono {
 			st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
