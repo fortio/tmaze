@@ -20,14 +20,30 @@ func main() {
 
 var runes = []rune{'╱', '╲'}
 
+type Walls int
+
+const (
+	Left  Walls = -1
+	Right Walls = 1
+)
+
+func (w Walls) Rune() rune {
+	if w == Left {
+		return runes[0]
+	}
+	return runes[1]
+}
+
 type State struct {
 	ap              *ansipixels.AnsiPixels
 	mono            bool
 	newlines        bool
 	showPath        bool
-	maze            [][]rune
-	solver          [2]int
+	maze            [][]Walls
+	solverPosition  [2]int
 	solverDirection [2]int
+	start           [2]int
+	end             [2]int
 }
 
 func Main() int {
@@ -35,7 +51,7 @@ func Main() int {
 	fTrueColor := flag.Bool("truecolor", truecolorDefault,
 		"Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)")
 	fMono := flag.Bool("mono", false, "Use monochrome mode")
-	fFPS := flag.Float64("fps", 60, "Frames per second (ansipixels rendering)")
+	fFPS := flag.Float64("fps", 120, "Frames per second (ansipixels rendering)")
 	fNewLines := flag.Bool("nl", false, "Add newlines at end of each line (helps with copy/paste)")
 	cli.Main()
 	ap := ansipixels.NewAnsiPixels(*fFPS)
@@ -46,29 +62,17 @@ func Main() int {
 	ap.HideCursor()
 	defer ap.Restore()
 	st := &State{
-		ap:              ap,
-		mono:            *fMono,
-		newlines:        *fNewLines,
-		solver:          [2]int{0, 0},
-		solverDirection: [2]int{1, 0},
+		ap:       ap,
+		mono:     *fMono,
+		newlines: *fNewLines,
 	}
 	ap.OnResize = func() error {
-		ap.ClearScreen()
-		ap.StartSyncMode()
-		st.solver, st.solverDirection = [2]int{0, 0}, [2]int{1, 0}
-		st.ap.WriteString(tcolor.Reset)
-
-		// Debug the palette:
-		// ap.WriteString(tcolor.Inverse)
+		st.ResetSolver()
 		var idx int
-		st.maze = make([][]rune, ap.H)
+		st.maze = make([][]Walls, ap.H)
 		for l := range ap.H {
-			line := make([]rune, ap.W)
-			if st.newlines && l > 0 {
-				ap.WriteString("\r\n") // not technically needed but helps copy paste
-			}
+			line := make([]Walls, ap.W)
 			for c := range ap.W {
-				st.EmitColor(l)
 				switch {
 				case l == 0 || c+1 == ap.W:
 					// top line or rightmost column
@@ -80,11 +84,13 @@ func Main() int {
 					// inside is random
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
-				ap.WriteRune(runes[idx])
-				line[c] = runes[idx]
+				line[c] = Walls(2*idx - 1) // -1 for left, +1 for right
 			}
 			st.maze[l] = line
 		}
+		ap.ClearScreen()
+		ap.StartSyncMode()
+		st.RepaintAll()
 		ap.EndSyncMode()
 		return nil
 	}
@@ -99,35 +105,50 @@ func Main() int {
 	return 0
 }
 
-func (st *State) drawPath() {
-	st.ap.WriteFg(tcolor.BrightGreen.Color())
-	if st.solver == [2]int{0, 0} {
-		st.ap.MoveCursor(0, 0)
-		st.ap.WriteRune(st.maze[0][0])
+func (st *State) RepaintAll() {
+	st.ap.MoveCursor(0, 0)
+	if st.mono {
+		st.ap.WriteString(tcolor.Reset)
 	}
-	path := st.path()
-	if !st.showPath && st.mono {
-		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
+	for l := range st.ap.H {
+		if st.newlines && l > 0 {
+			st.ap.WriteString("\r\n") // not technically needed but helps copy paste
+		}
+		for c := range st.ap.W {
+			st.EmitColor()
+			st.ap.WriteRune(st.maze[l][c].Rune())
+		}
 	}
-	if !st.showPath && !st.mono {
-		st.EmitColor(0)
-	}
-	cur := st.maze[path[0]][path[1]]
-	st.ap.MoveCursor(path[1], path[0])
-	// if cur == runes[0] {
-	// 	st.ap.WriteRune(runes[0])
-	// } else {
-	// 	st.ap.WriteRune(runes[1])
-	// }
-	st.ap.WriteRune(cur)
 }
 
-func (st *State) EmitColor(_ int) {
+func (st *State) ResetSolver() {
+	st.solverPosition = st.start // zero value
+	st.solverDirection = [2]int{1, 0}
+	st.end = [2]int{st.ap.H - 1, st.ap.W - 1}
+	st.showPath = false
+}
+
+func (st *State) drawPath() {
+	if st.solverPosition == st.end {
+		// Reached the end, stop
+		st.showPath = false
+		return
+	}
+	if st.solverPosition == st.start {
+		st.ap.MoveCursor(0, 0)
+		st.ap.WriteRune(runes[1]) // start always right
+	}
+	// Move to new position
+	path := st.NewPos()
+	cur := st.maze[path[0]][path[1]]
+	st.ap.MoveCursor(path[1], path[0])
+	st.ap.WriteRune(cur.Rune())
+}
+
+func (st *State) EmitColor() {
 	if st.mono {
 		return
 	}
-	// Debug the palette:
-	// color := tcolor.Oklchf(.7, .7, float64(line)/float64(st.ap.H)) //nolint:gosec // just for visual effect
 	color := tcolor.Oklchf(.75, .5, rand.Float64()) //nolint:gosec // just for visual effect
 	st.ap.WriteString(st.ap.ColorOutput.Foreground(color))
 }
@@ -143,15 +164,16 @@ func (st *State) Tick() bool {
 	switch c {
 	case 'q', 'Q', 3: // Ctrl-C
 		return false
+	case 'c', 'C':
+		st.mono = !st.mono
+		st.ResetSolver()
+		st.RepaintAll()
 	case 'P', 'p':
-		st.showPath = !st.showPath
+		st.ResetSolver()
+		st.showPath = true
+		st.ap.WriteString(tcolor.BrightGreen.Foreground())
 	default:
-		// Regen on any other key
-		st.ap.WriteString(tcolor.Reset)
-		st.showPath = false
-		if st.mono {
-			st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
-		}
+		// Regen a new maze on any other key
 		_ = st.ap.OnResize()
 	}
 	return true
