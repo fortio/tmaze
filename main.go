@@ -57,7 +57,6 @@ func Main() int {
 		st.maze = make([][]rune, ap.H)
 		for l := range ap.H {
 			line := make([]rune, ap.W)
-			st.maze[l] = line
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
@@ -75,8 +74,9 @@ func Main() int {
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
 				ap.WriteRune(runes[idx])
-				st.maze[l][c] = runes[idx]
+				line[c] = runes[idx]
 			}
+			st.maze[l] = line
 		}
 		ap.EndSyncMode()
 		return nil
