@@ -68,6 +68,8 @@ flags:
         Frames per second (ansipixels rendering) (default 60)
   -mono
         Use monochrome mode
+  -nl
+        Add newlines at end of each line (helps with copy/paste)
   -truecolor
         Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)
 ```
