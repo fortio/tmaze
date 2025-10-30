@@ -11,6 +11,7 @@ import (
 	"fortio.org/cli"
 	"fortio.org/log"
 	"fortio.org/terminal/ansipixels"
+	"fortio.org/terminal/ansipixels/tcolor"
 )
 
 func main() {
@@ -18,13 +19,15 @@ func main() {
 }
 
 type State struct {
-	ap *ansipixels.AnsiPixels
+	ap   *ansipixels.AnsiPixels
+	mono bool
 }
 
 func Main() int {
 	truecolorDefault := ansipixels.DetectColorMode().TrueColor
 	fTrueColor := flag.Bool("truecolor", truecolorDefault,
 		"Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)")
+	fMono := flag.Bool("mono", false, "Use monochrome mode")
 	fFPS := flag.Float64("fps", 60, "Frames per second (ansipixels rendering)")
 	cli.Main()
 	ap := ansipixels.NewAnsiPixels(*fFPS)
@@ -34,15 +37,22 @@ func Main() int {
 	}
 	ap.HideCursor()
 	defer ap.Restore()
+	st := &State{
+		ap:   ap,
+		mono: *fMono,
+	}
 	ap.OnResize = func() error {
 		ap.ClearScreen()
 		ap.StartSyncMode()
+		// Debug the palette:
+		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
 		for l := range ap.H {
 			if l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
 			for range ap.W {
+				st.EmitColor(l)
 				idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				ap.WriteRune(runes[idx])
 			}
@@ -51,13 +61,24 @@ func Main() int {
 		return nil
 	}
 	_ = ap.OnResize() // initial draw.
-	st := &State{ap: ap}
+	ap.MoveCursor(0, ap.H-1)
+	ap.SaveCursorPos() // Ticks save cursor to prepare for where we want it on exit.
 	err := ap.FPSTicks(st.Tick)
 	if err != nil {
 		log.Infof("Exiting on %v", err)
 		return 1
 	}
 	return 0
+}
+
+func (st *State) EmitColor(_ int) {
+	if st.mono {
+		return
+	}
+	// Debug the palette:
+	// color := tcolor.Oklchf(.7, .7, float64(line)/float64(st.ap.H)) //nolint:gosec // just for visual effect
+	color := tcolor.Oklchf(.75, .5, rand.Float64()) //nolint:gosec // just for visual effect
+	st.ap.WriteString(st.ap.ColorOutput.Foreground(color))
 }
 
 func (st *State) Tick() bool {
@@ -67,7 +88,6 @@ func (st *State) Tick() bool {
 	c := st.ap.Data[0]
 	switch c {
 	case 'q', 'Q', 3: // Ctrl-C
-		log.Infof("Exiting on %q", c)
 		return false
 	default:
 		// Regen on any other key
