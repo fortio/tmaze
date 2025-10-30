@@ -24,7 +24,7 @@ type State struct {
 	ap       *ansipixels.AnsiPixels
 	mono     bool
 	newlines bool
-	path     bool
+	showPath bool
 	maze     [][]rune
 }
 
@@ -54,9 +54,9 @@ func Main() int {
 		// Debug the palette:
 		// ap.WriteString(tcolor.Inverse)
 		var idx int
-		st.maze = make([][]rune, 0, ap.H)
+		st.maze = make([][]rune, ap.H)
 		for l := range ap.H {
-			line := make([]rune, 0, ap.W)
+			line := make([]rune, ap.W)
 			st.maze[l] = line
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
@@ -75,7 +75,7 @@ func Main() int {
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
 				ap.WriteRune(runes[idx])
-				st.maze[l] = append(st.maze[l], runes[idx])
+				st.maze[l][c] = runes[idx]
 			}
 		}
 		ap.EndSyncMode()
@@ -93,12 +93,16 @@ func Main() int {
 }
 
 func (st *State) drawPath() {
-	path := path(st.maze)
-	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
+	path := st.path()
 	st.ap.WriteFg(tcolor.Green.Color())
 	for c := range path {
-		if st.path {
+		st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
+		if !st.showPath {
+
 			st.EmitColor(0)
+			if st.mono {
+				st.ap.WriteFg(tcolor.RGBColor{255, 255, 255}.Color())
+			}
 		}
 		cur := st.maze[c[0]][c[1]]
 		st.ap.MoveCursor(c[1], c[0])
@@ -107,8 +111,8 @@ func (st *State) drawPath() {
 		} else {
 			st.ap.WriteRune(runes[1])
 		}
+		st.ap.EndSyncMode()
 	}
-	st.ap.EndSyncMode()
 }
 
 func (st *State) EmitColor(_ int) {
@@ -130,7 +134,7 @@ func (st *State) Tick() bool {
 	case 'q', 'Q', 3: // Ctrl-C
 		return false
 	case 'P', 'p':
-		st.path = !st.path
+		st.showPath = !st.showPath
 		st.drawPath()
 	default:
 		// Regen on any other key
