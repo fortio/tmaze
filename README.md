@@ -1,8 +1,6 @@
-[![GoDoc](https://godoc.org/fortio.org/tmaze?status.svg)](https://pkg.go.dev/fortio.org/tmaze)
 [![Go Report Card](https://goreportcard.com/badge/fortio.org/tmaze)](https://goreportcard.com/report/fortio.org/tmaze)
 [![GitHub Release](https://img.shields.io/github/release/fortio/tmaze.svg?style=flat)](https://github.com/fortio/tmaze/releases/)
 [![CI Checks](https://github.com/fortio/tmaze/actions/workflows/include.yml/badge.svg)](https://github.com/fortio/tmaze/actions/workflows/include.yml)
-[![codecov](https://codecov.io/github/fortio/tmaze/graph/badge.svg?token=Yx6QaeQr1b)](https://codecov.io/github/fortio/tmaze)
 
 # tmaze
 
