@@ -10,6 +10,7 @@ func (st *State) path() <-chan [2]int {
 		cur := [2]int{0, 0}
 		curDirection := [2]int{1, 0}
 		ticker := time.NewTicker(time.Millisecond)
+		defer ticker.Stop()
 		for cur != [2]int{len(st.maze) - 1, len(st.maze[0]) - 1} {
 			pathChan <- cur
 			<-ticker.C
