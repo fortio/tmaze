@@ -18,10 +18,16 @@ func main() {
 	os.Exit(Main())
 }
 
+var runes = []rune{'╱', '╲'}
+
 type State struct {
-	ap       *ansipixels.AnsiPixels
-	mono     bool
-	newlines bool
+	ap              *ansipixels.AnsiPixels
+	mono            bool
+	newlines        bool
+	showPath        bool
+	maze            [][]rune
+	solver          [2]int
+	solverDirection [2]int
 }
 
 func Main() int {
@@ -40,18 +46,24 @@ func Main() int {
 	ap.HideCursor()
 	defer ap.Restore()
 	st := &State{
-		ap:       ap,
-		mono:     *fMono,
-		newlines: *fNewLines,
+		ap:              ap,
+		mono:            *fMono,
+		newlines:        *fNewLines,
+		solver:          [2]int{0, 0},
+		solverDirection: [2]int{1, 0},
 	}
 	ap.OnResize = func() error {
 		ap.ClearScreen()
 		ap.StartSyncMode()
+		st.solver, st.solverDirection = [2]int{0, 0}, [2]int{1, 0}
+		st.ap.WriteString(tcolor.Reset)
+
 		// Debug the palette:
 		// ap.WriteString(tcolor.Inverse)
-		runes := []rune{'╱', '╲'}
 		var idx int
+		st.maze = make([][]rune, ap.H)
 		for l := range ap.H {
+			line := make([]rune, ap.W)
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
@@ -69,7 +81,9 @@ func Main() int {
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
 				ap.WriteRune(runes[idx])
+				line[c] = runes[idx]
 			}
+			st.maze[l] = line
 		}
 		ap.EndSyncMode()
 		return nil
@@ -85,6 +99,29 @@ func Main() int {
 	return 0
 }
 
+func (st *State) drawPath() {
+	st.ap.WriteFg(tcolor.BrightGreen.Color())
+	if st.solver == [2]int{0, 0} {
+		st.ap.MoveCursor(0, 0)
+		st.ap.WriteRune(st.maze[0][0])
+	}
+	path := st.path()
+	if !st.showPath && st.mono {
+		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
+	}
+	if !st.showPath && !st.mono {
+		st.EmitColor(0)
+	}
+	cur := st.maze[path[0]][path[1]]
+	st.ap.MoveCursor(path[1], path[0])
+	// if cur == runes[0] {
+	// 	st.ap.WriteRune(runes[0])
+	// } else {
+	// 	st.ap.WriteRune(runes[1])
+	// }
+	st.ap.WriteRune(cur)
+}
+
 func (st *State) EmitColor(_ int) {
 	if st.mono {
 		return
@@ -96,6 +133,9 @@ func (st *State) EmitColor(_ int) {
 }
 
 func (st *State) Tick() bool {
+	if st.showPath {
+		st.drawPath()
+	}
 	if len(st.ap.Data) == 0 {
 		return true
 	}
@@ -103,8 +143,15 @@ func (st *State) Tick() bool {
 	switch c {
 	case 'q', 'Q', 3: // Ctrl-C
 		return false
+	case 'P', 'p':
+		st.showPath = !st.showPath
 	default:
 		// Regen on any other key
+		st.ap.WriteString(tcolor.Reset)
+		st.showPath = false
+		if st.mono {
+			st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
+		}
 		_ = st.ap.OnResize()
 	}
 	return true
