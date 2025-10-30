@@ -94,24 +94,11 @@ func Main() int {
 func (st *State) drawPath() {
 	path := path(st.maze)
 	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
+	st.ap.WriteFg(tcolor.Green.Color())
 	for c := range path {
-		st.ap.WriteFg(tcolor.Green.Color())
-		cur := st.maze[c[0]][c[1]]
-		st.ap.MoveCursor(c[1], c[0])
-		if cur == runes[0] {
-			st.ap.WriteRune(runes[0])
-		} else {
-			st.ap.WriteRune(runes[1])
+		if st.path {
+			st.EmitColor(0)
 		}
-	}
-	st.ap.EndSyncMode()
-}
-
-func (st *State) clearPath() {
-	path := path(st.maze)
-	st.ap.StartSyncMode()
-	for c := range path {
-		st.EmitColor(0)
 		cur := st.maze[c[0]][c[1]]
 		st.ap.MoveCursor(c[1], c[0])
 		if cur == runes[0] {
@@ -143,11 +130,7 @@ func (st *State) Tick() bool {
 		return false
 	case 'P', 'p':
 		st.path = !st.path
-		if st.path {
-			st.drawPath()
-		} else {
-			st.clearPath()
-		}
+		st.drawPath()
 	default:
 		// Regen on any other key
 		_ = st.ap.OnResize()
