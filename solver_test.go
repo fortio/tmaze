@@ -6,8 +6,9 @@ import (
 	"fortio.org/terminal/ansipixels"
 )
 
-// mockAnsiPixels creates a minimal AnsiPixels for testing
-func mockAnsiPixels(w, h int) *ansipixels.AnsiPixels {
+// newTestAnsiPixels creates a minimal AnsiPixels for testing.
+// Just the dimensions are needed for these tests.
+func newTestAnsiPixels(w, h int) *ansipixels.AnsiPixels {
 	return &ansipixels.AnsiPixels{
 		W: w,
 		H: h,
@@ -16,7 +17,7 @@ func mockAnsiPixels(w, h int) *ansipixels.AnsiPixels {
 
 func TestGenerateMaze(t *testing.T) {
 	st := &State{
-		ap: mockAnsiPixels(5, 4),
+		ap: newTestAnsiPixels(5, 4),
 	}
 	st.GenerateMaze()
 
@@ -148,7 +149,7 @@ func TestNewPos(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create a simple 5x5 maze
 			st := &State{
-				ap:              mockAnsiPixels(5, 5),
+				ap:              newTestAnsiPixels(5, 5),
 				solverPosition:  tt.initialPos,
 				solverDirection: tt.initialDir,
 			}
@@ -216,7 +217,7 @@ func TestResetSolverState(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			st := &State{
-				ap:       mockAnsiPixels(tt.width, tt.height),
+				ap:       newTestAnsiPixels(tt.width, tt.height),
 				start:    tt.initialStart,
 				showPath: false, // Keep false to avoid WriteString calls
 			}
