@@ -86,29 +86,6 @@ func Main() int {
 	return 0
 }
 
-func (st *State) GenerateMaze() {
-	var idx int
-	st.maze = make([][]Walls, st.ap.H)
-	for l := range st.ap.H {
-		line := make([]Walls, st.ap.W)
-		for c := range st.ap.W {
-			switch {
-			case l == 0 || c+1 == st.ap.W:
-				// top line or rightmost column
-				idx = (l + c + 1) % 2
-			case l+1 == st.ap.H || c == 0:
-				// bottom line or leftmost column
-				idx = (l + c) % 2
-			default:
-				// inside is random
-				idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
-			}
-			line[c] = Walls(2*idx - 1) // -1 for left, +1 for right
-		}
-		st.maze[l] = line
-	}
-}
-
 func (st *State) RepaintAll() {
 	st.ap.MoveCursor(0, 0)
 	if st.mono {
@@ -126,9 +103,7 @@ func (st *State) RepaintAll() {
 }
 
 func (st *State) ResetSolver() {
-	st.solverPosition = st.start // zero value
-	st.solverDirection = [2]int{1, 0}
-	st.end = [2]int{st.ap.H - 1, st.ap.W - 1}
+	st.ResetSolverState()
 	if st.showPath {
 		st.ap.WriteString(tcolor.BrightGreen.Foreground())
 	}
