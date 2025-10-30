@@ -8,6 +8,7 @@
 
 Ansi pixels version of the C64 classic maze
 
+In mono:
 ```
 ╲╲╲╱╲╱╲╲╱╱╱╱╲╱╲╲╱╱╱╲╲╲╱╱╲╲╲╲╲╱╲╱╱╲╲╱╲╱╱╱╲╲╲╲╲╲╲╱╲╱╱╲╱╱╱╲╲╲╱╲╱╲╲╱╲╲╱╱╲╱╲╱╱╲╱╱╱╱╲╲
 ╲╲╲╱╲╲╱╲╲╱╲╱╲╲╲╲╲╲╲╱╱╱╲╱╲╲╲╱╲╲╲╱╱╱╱╲╲╲╱╲╱╲╱╲╲╱╲╱╱╱╲╲╲╱╱╲╲╲╲╲╲╲╲╱╱╲╲╲╱╲╲╱╱╲╱╱╱╲╱╱
@@ -36,6 +37,9 @@ Ansi pixels version of the C64 classic maze
 ╲╱╲╱╲╱╲╱╲╲╱╲╱╱╲╲╲╲╲╱╲╲╱╲╱╲╲╱╲╲╱╱╱╲╲╱╲╱╲╲╱╱╲╱╱╱╱╱╲╱╲╲╲╱╲╲╱╲╱╲╱╲╱╱╱╲╱╲╱╲╱╱╲╲╱╲╱╱╱╲
 ```
 
+In color:
+![Screenshot](screenshot.png)
+
 ## Install
 You can get the binary from [releases](https://github.com/fortio/tmaze/releases)
 
@@ -62,4 +66,10 @@ docker run -ti fortio/tmaze
 tmaze help
 
 flags:
+  -fps float
+        Frames per second (ansipixels rendering) (default 60)
+  -mono
+        Use monochrome mode
+  -truecolor
+        Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)
 ```
