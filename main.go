@@ -18,6 +18,8 @@ func main() {
 	os.Exit(Main())
 }
 
+var runes []rune = []rune{'╱', '╲'}
+
 type State struct {
 	ap       *ansipixels.AnsiPixels
 	mono     bool
@@ -51,7 +53,6 @@ func Main() int {
 		ap.StartSyncMode()
 		// Debug the palette:
 		// ap.WriteString(tcolor.Inverse)
-		runes := []rune{'╱', '╲'}
 		var idx int
 		st.maze = make([][]rune, 0, ap.H)
 		for l := range ap.H {
@@ -91,7 +92,6 @@ func Main() int {
 }
 
 func (st *State) drawPath() {
-	runes := []rune{'╱', '╲'}
 	path := path(st.maze)
 	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
 	for c := range path {
@@ -108,7 +108,6 @@ func (st *State) drawPath() {
 }
 
 func (st *State) clearPath() {
-	runes := []rune{'╱', '╲'}
 	path := path(st.maze)
 	st.ap.StartSyncMode()
 	for c := range path {

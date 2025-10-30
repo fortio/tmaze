@@ -7,7 +7,6 @@ func path(maze [][]rune) <-chan [2]int {
 	pathChan := make(chan [2]int)
 	go func() {
 		defer close(pathChan)
-		runes := []rune{'╱', '╲'}
 		cur := [2]int{0, 0}
 		curDirection := [2]int{1, 0}
 
