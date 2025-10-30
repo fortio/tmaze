@@ -97,12 +97,15 @@ func Main() int {
 }
 
 func (st *State) drawPath() {
-	path := st.path()
 	st.ap.WriteFg(tcolor.BrightGreen.Color())
+	if st.solver == [2]int{0, 0} {
+		st.ap.MoveCursor(0, 0)
+		st.ap.WriteRune(st.maze[0][0])
+	}
+	path := st.path()
 	if !st.showPath && st.mono {
 		st.ap.WriteFg(tcolor.RGBColor{R: 255, G: 255, B: 255}.Color())
 	}
-	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
 	if !st.showPath && !st.mono {
 		st.EmitColor(0)
 	}
@@ -114,7 +117,6 @@ func (st *State) drawPath() {
 	// 	st.ap.WriteRune(runes[1])
 	// }
 	st.ap.WriteRune(cur)
-	st.ap.EndSyncMode()
 }
 
 func (st *State) EmitColor(_ int) {

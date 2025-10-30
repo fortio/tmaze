@@ -7,6 +7,9 @@ func (st *State) path() [2]int {
 	// Rotate 90° perpendicular to movement: swap coords and negate one
 	// char determines which one to negate
 	sign := 1
+	if st.solver[0] >= len(st.maze) || st.solver[1] >= len(st.maze[0]) {
+		return [2]int{len(st.maze) - 1, len(st.maze[0]) - 1}
+	}
 	if st.maze[st.solver[0]][st.solver[1]] == runes[0] {
 		sign = -1
 	}
