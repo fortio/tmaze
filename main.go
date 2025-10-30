@@ -61,6 +61,8 @@ func Main() int {
 		return nil
 	}
 	_ = ap.OnResize() // initial draw.
+	ap.MoveCursor(0, ap.H-1)
+	ap.SaveCursorPos() // Ticks save cursor to prepare for where we want it on exit.
 	err := ap.FPSTicks(st.Tick)
 	if err != nil {
 		log.Infof("Exiting on %v", err)
@@ -86,7 +88,6 @@ func (st *State) Tick() bool {
 	c := st.ap.Data[0]
 	switch c {
 	case 'q', 'Q', 3: // Ctrl-C
-		log.Infof("Exiting on %q", c)
 		return false
 	default:
 		// Regen on any other key
