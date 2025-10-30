@@ -2,7 +2,7 @@ package main
 
 import "time"
 
-// imagine that we're always going u,d,l, or r, and each time we hit a character we bounce off of it
+// imagine that we're always going u,d,l, or r, and each time we hit a character we bounce off of it.
 func path(maze [][]rune) <-chan [2]int {
 	pathChan := make(chan [2]int)
 	go func() {

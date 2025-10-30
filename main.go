@@ -53,9 +53,9 @@ func Main() int {
 		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
 		var idx int
-		st.maze = make([][]rune, 0)
+		st.maze = make([][]rune, 0, ap.H)
 		for l := range ap.H {
-			st.maze = append(st.maze, []rune{})
+			st.maze = append(st.maze, make([]rune, 0, ap.W))
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
