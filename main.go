@@ -51,7 +51,9 @@ func Main() int {
 		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
 		var idx int
+		maze := make([][]rune, 0)
 		for l := range ap.H {
+			maze = append(maze, []rune{})
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
@@ -69,8 +71,20 @@ func Main() int {
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
 				ap.WriteRune(runes[idx])
+				maze[l] = append(maze[l], runes[idx])
 			}
 		}
+		path := path(maze)
+		for _, c := range path {
+			cur := maze[c[0]][c[1]]
+			ap.MoveCursor(c[1], c[0])
+			if rune(cur) == runes[0] {
+				ap.WriteRune(runes[0])
+			} else {
+				ap.WriteRune(runes[1])
+			}
+		}
+		ap.WriteFg(tcolor.Green.Color())
 		ap.EndSyncMode()
 		return nil
 	}
