@@ -89,10 +89,11 @@ func Main() int {
 	}
 	return 0
 }
+
 func (st *State) drawPath() {
 	runes := []rune{'╱', '╲'}
 	path := path(st.maze)
-	st.ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
+	st.ap.StartSyncMode() // weirdly, it seems to lag a bit without starting sync mode again in this loop
 	for c := range path {
 		st.ap.WriteFg(tcolor.Green.Color())
 		cur := st.maze[c[0]][c[1]]
@@ -105,10 +106,11 @@ func (st *State) drawPath() {
 	}
 	st.ap.EndSyncMode()
 }
+
 func (st *State) clearPath() {
 	runes := []rune{'╱', '╲'}
 	path := path(st.maze)
-	st.ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
+	st.ap.StartSyncMode()
 	for c := range path {
 		st.EmitColor(0)
 		cur := st.maze[c[0]][c[1]]
