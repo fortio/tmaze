@@ -149,7 +149,7 @@ func (st *State) Tick() bool {
 		st.mono = !st.mono
 		st.RepaintAll()
 		st.ResetSolver()
-	case 'P', 'p':
+	case 'P', 'p', 'S', 's':
 		st.showPath = true
 		st.ResetSolver()
 	default:
