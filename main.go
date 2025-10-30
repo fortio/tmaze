@@ -19,8 +19,9 @@ func main() {
 }
 
 type State struct {
-	ap   *ansipixels.AnsiPixels
-	mono bool
+	ap       *ansipixels.AnsiPixels
+	mono     bool
+	newlines bool
 }
 
 func Main() int {
@@ -29,6 +30,7 @@ func Main() int {
 		"Use true color (24-bit RGB) instead of 8-bit ANSI colors (default is true if COLORTERM is set)")
 	fMono := flag.Bool("mono", false, "Use monochrome mode")
 	fFPS := flag.Float64("fps", 60, "Frames per second (ansipixels rendering)")
+	fNewLines := flag.Bool("nl", false, "Add newlines at end of each line (helps with copy/paste)")
 	cli.Main()
 	ap := ansipixels.NewAnsiPixels(*fFPS)
 	ap.TrueColor = *fTrueColor
@@ -38,8 +40,9 @@ func Main() int {
 	ap.HideCursor()
 	defer ap.Restore()
 	st := &State{
-		ap:   ap,
-		mono: *fMono,
+		ap:       ap,
+		mono:     *fMono,
+		newlines: *fNewLines,
 	}
 	ap.OnResize = func() error {
 		ap.ClearScreen()
@@ -48,7 +51,7 @@ func Main() int {
 		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
 		for l := range ap.H {
-			if l > 0 {
+			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
 			for range ap.W {
