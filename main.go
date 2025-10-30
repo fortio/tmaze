@@ -54,10 +54,15 @@ func Main() int {
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
-			for range ap.W {
+			for c := range ap.W {
 				st.EmitColor(l)
 				idx := rand.IntN(len(runes)) //nolint:gosec // just for visual effect
-				ap.WriteRune(runes[idx])
+				if l == 0 || c+1 == ap.W {
+					idx = l + c + 1
+				} else if l+1 == ap.H || c == 0 {
+					idx = l + c
+				}
+				ap.WriteRune(runes[idx%2])
 			}
 		}
 		ap.EndSyncMode()
