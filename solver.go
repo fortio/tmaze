@@ -14,36 +14,16 @@ func (st *State) path() <-chan [2]int {
 		for cur != [2]int{len(st.maze) - 1, len(st.maze[0]) - 1} {
 			pathChan <- cur
 			<-ticker.C
+			oldDirection := curDirection
 			cur[0] += curDirection[0]
 			cur[1] += curDirection[1]
-			char := st.maze[cur[0]][cur[1]]
-			// this could be cleaned up
-			switch curDirection {
-			case [2]int{0, 1}:
-				curDirection[1] = 0
-				curDirection[0] = 1
-				if char == runes[0] {
-					curDirection[0] = -1
-				}
-			case [2]int{0, -1}:
-				curDirection[1] = 0
-				curDirection[0] = -1
-				if char == runes[0] {
-					curDirection[0] = 1
-				}
-			case [2]int{1, 0}:
-				curDirection[0] = 0
-				curDirection[1] = 1
-				if char == runes[0] {
-					curDirection[1] = -1
-				}
-			case [2]int{-1, 0}:
-				curDirection[0] = 0
-				curDirection[1] = -1
-				if char == runes[0] {
-					curDirection[1] = 1
-				}
+			// Rotate 90° perpendicular to movement: swap coords and negate one
+			// char determines which one to negate
+			sign := 1
+			if st.maze[cur[0]][cur[1]] == runes[0] {
+				sign = -1
 			}
+			curDirection = [2]int{sign * oldDirection[1], sign * oldDirection[0]}
 		}
 	}()
 	return pathChan
