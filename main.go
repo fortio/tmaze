@@ -22,6 +22,8 @@ type State struct {
 	ap       *ansipixels.AnsiPixels
 	mono     bool
 	newlines bool
+	path     bool
+	maze     [][]rune
 }
 
 func Main() int {
@@ -51,9 +53,9 @@ func Main() int {
 		// ap.WriteString(tcolor.Inverse)
 		runes := []rune{'╱', '╲'}
 		var idx int
-		maze := make([][]rune, 0)
+		st.maze = make([][]rune, 0)
 		for l := range ap.H {
-			maze = append(maze, []rune{})
+			st.maze = append(st.maze, []rune{})
 			if st.newlines && l > 0 {
 				ap.WriteString("\r\n") // not technically needed but helps copy paste
 			}
@@ -71,21 +73,8 @@ func Main() int {
 					idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
 				}
 				ap.WriteRune(runes[idx])
-				maze[l] = append(maze[l], runes[idx])
+				st.maze[l] = append(st.maze[l], runes[idx])
 			}
-		}
-		path := path(maze)
-		for c := range path {
-			ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
-			ap.WriteFg(tcolor.Green.Color())
-			cur := maze[c[0]][c[1]]
-			ap.MoveCursor(c[1], c[0])
-			if rune(cur) == runes[0] {
-				ap.WriteRune(runes[0])
-			} else {
-				ap.WriteRune(runes[1])
-			}
-			ap.EndSyncMode()
 		}
 		ap.EndSyncMode()
 		return nil
@@ -99,6 +88,38 @@ func Main() int {
 		return 1
 	}
 	return 0
+}
+func (st *State) drawPath() {
+	runes := []rune{'╱', '╲'}
+	path := path(st.maze)
+	st.ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
+	for c := range path {
+		st.ap.WriteFg(tcolor.Green.Color())
+		cur := st.maze[c[0]][c[1]]
+		st.ap.MoveCursor(c[1], c[0])
+		if rune(cur) == runes[0] {
+			st.ap.WriteRune(runes[0])
+		} else {
+			st.ap.WriteRune(runes[1])
+		}
+	}
+	st.ap.EndSyncMode()
+}
+func (st *State) clearPath() {
+	runes := []rune{'╱', '╲'}
+	path := path(st.maze)
+	st.ap.StartSyncMode() //weirdly, it seems to lag a bit without starting sync mode again in this loop
+	for c := range path {
+		st.EmitColor(0)
+		cur := st.maze[c[0]][c[1]]
+		st.ap.MoveCursor(c[1], c[0])
+		if rune(cur) == runes[0] {
+			st.ap.WriteRune(runes[0])
+		} else {
+			st.ap.WriteRune(runes[1])
+		}
+	}
+	st.ap.EndSyncMode()
 }
 
 func (st *State) EmitColor(_ int) {
@@ -119,6 +140,13 @@ func (st *State) Tick() bool {
 	switch c {
 	case 'q', 'Q', 3: // Ctrl-C
 		return false
+	case 'P', 'p':
+		st.path = !st.path
+		if st.path {
+			st.drawPath()
+		} else {
+			st.clearPath()
+		}
 	default:
 		// Regen on any other key
 		_ = st.ap.OnResize()
