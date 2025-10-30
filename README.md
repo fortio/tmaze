@@ -36,6 +36,7 @@ In mono:
 ```
 
 In color:
+
 ![Screenshot](screenshot.png)
 
 ## Install
