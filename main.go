@@ -39,6 +39,8 @@ type State struct {
 	mono            bool
 	newlines        bool
 	showPath        bool
+	width           int
+	height          int
 	maze            [][]Walls
 	solverPosition  [2]int
 	solverDirection [2]int
@@ -53,6 +55,8 @@ func Main() int {
 	fMono := flag.Bool("mono", false, "Use monochrome mode")
 	fFPS := flag.Float64("fps", 120, "Frames per second (ansipixels rendering)")
 	fNewLines := flag.Bool("nl", false, "Add newlines at end of each line (helps with copy/paste)")
+	fWidth := flag.Int("width", 0, "Width of the maze (0 for full terminal width)")
+	fHeight := flag.Int("height", 0, "Height of the maze (0 for full terminal height)")
 	cli.Main()
 	ap := ansipixels.NewAnsiPixels(*fFPS)
 	ap.TrueColor = *fTrueColor
@@ -65,6 +69,11 @@ func Main() int {
 		ap:       ap,
 		mono:     *fMono,
 		newlines: *fNewLines,
+		width:    *fWidth,
+		height:   *fHeight,
+	}
+	if st.width > 0 || st.height > 0 {
+		st.newlines = true
 	}
 	ap.OnResize = func() error {
 		st.GenerateMaze()
@@ -91,11 +100,12 @@ func (st *State) RepaintAll() {
 	if st.mono {
 		st.ap.WriteString(tcolor.Reset)
 	}
-	for l := range st.ap.H {
+	width, height := st.GetSize()
+	for l := range height {
 		if st.newlines && l > 0 {
 			st.ap.WriteString("\r\n") // not technically needed but helps copy paste
 		}
-		for c := range st.ap.W {
+		for c := range width {
 			st.EmitColor()
 			st.ap.WriteRune(st.maze[l][c].Rune())
 		}
