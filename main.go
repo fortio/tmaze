@@ -20,7 +20,6 @@ func main() {
 
 var runes = []rune{'╱', '╲'}
 
-
 func (w Walls) Rune() rune {
 	if w == Left {
 		return runes[0]
