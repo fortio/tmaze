@@ -4,6 +4,24 @@ import (
 	"math/rand/v2"
 )
 
+type Walls int
+
+const (
+	Left  Walls = -1
+	Right Walls = 1
+)
+
+func LeftRight(idx int) Walls {
+	switch idx {
+	case 0:
+		return Left
+	case 1:
+		return Right
+	default:
+		panic("invalid index for LeftRight")
+	}
+}
+
 // NewPos progresses along the path from the top left.
 // Principle: imagine that we're always going u,d,l, or r,
 // and each time we hit a character we bounce off of it.
@@ -37,6 +55,7 @@ func (st *State) GenerateMaze() {
 	for l := range height {
 		line := make([]Walls, width)
 		for c := range width {
+			// pick 0 (left) or 1 (right)
 			switch {
 			case l == 0 || c+1 == width:
 				// top line or rightmost column
@@ -46,9 +65,9 @@ func (st *State) GenerateMaze() {
 				idx = (l + c) % 2
 			default:
 				// inside is random
-				idx = rand.IntN(len(runes)) //nolint:gosec // just for visual effect
+				idx = rand.IntN(2) //nolint:gosec // not crypto.
 			}
-			line[c] = Walls(2*idx - 1) // -1 for left, +1 for right
+			line[c] = LeftRight(idx) // will be -1 for left, +1 for right
 		}
 		st.maze[l] = line
 	}

@@ -20,12 +20,6 @@ func main() {
 
 var runes = []rune{'╱', '╲'}
 
-type Walls int
-
-const (
-	Left  Walls = -1
-	Right Walls = 1
-)
 
 func (w Walls) Rune() rune {
 	if w == Left {
