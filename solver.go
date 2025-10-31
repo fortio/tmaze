@@ -15,6 +15,8 @@ func (st *State) NewPos() [2]int {
 	return st.solverPosition
 }
 
+// GetSize returns the desired maze size, using configured width/height
+// or falling back to the full terminal size.
 func (st *State) GetSize() (width, height int) {
 	width = st.width
 	if width <= 0 {
@@ -27,7 +29,7 @@ func (st *State) GetSize() (width, height int) {
 	return width, height
 }
 
-// GenerateMaze creates a new maze based on the current size (ap.W, ap.H).
+// GenerateMaze creates a new maze based on the current size.
 func (st *State) GenerateMaze() {
 	var idx int
 	width, height := st.GetSize()
