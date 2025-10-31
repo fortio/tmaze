@@ -72,7 +72,8 @@ func Main() int {
 		width:    *fWidth,
 		height:   *fHeight,
 	}
-	if st.width > 0 || st.height > 0 {
+	if st.width > 0 {
+		// need newlines when width isn't full terminal width
 		st.newlines = true
 	}
 	ap.OnResize = func() error {
