@@ -15,18 +15,33 @@ func (st *State) NewPos() [2]int {
 	return st.solverPosition
 }
 
-// GenerateMaze creates a new maze based on the current size (ap.W, ap.H).
+// GetSize returns the desired maze size, using configured width/height
+// or falling back to the full terminal size.
+func (st *State) GetSize() (width, height int) {
+	width = st.width
+	if width <= 0 {
+		width = st.ap.W
+	}
+	height = st.height
+	if height <= 0 {
+		height = st.ap.H
+	}
+	return width, height
+}
+
+// GenerateMaze creates a new maze based on the current size.
 func (st *State) GenerateMaze() {
 	var idx int
-	st.maze = make([][]Walls, st.ap.H)
-	for l := range st.ap.H {
-		line := make([]Walls, st.ap.W)
-		for c := range st.ap.W {
+	width, height := st.GetSize()
+	st.maze = make([][]Walls, height)
+	for l := range height {
+		line := make([]Walls, width)
+		for c := range width {
 			switch {
-			case l == 0 || c+1 == st.ap.W:
+			case l == 0 || c+1 == width:
 				// top line or rightmost column
 				idx = (l + c + 1) % 2
-			case l+1 == st.ap.H || c == 0:
+			case l+1 == height || c == 0:
 				// bottom line or leftmost column
 				idx = (l + c) % 2
 			default:
@@ -42,5 +57,6 @@ func (st *State) GenerateMaze() {
 func (st *State) ResetSolverState() {
 	st.solverPosition = st.start // zero value
 	st.solverDirection = [2]int{1, 0}
-	st.end = [2]int{st.ap.H - 1, st.ap.W - 1}
+	width, height := st.GetSize()
+	st.end = [2]int{height - 1, width - 1}
 }
