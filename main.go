@@ -104,6 +104,7 @@ func (st *State) RepaintAll() {
 		}
 	}
 	st.ResetSolverState()
+	// Prepare for eventual maze solving (including if we're already in solving mode etc)
 	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 }
 
