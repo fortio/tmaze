@@ -78,6 +78,7 @@ func Main() int {
 		ap.EndSyncMode()
 		return nil
 	}
+	st.ResetSolver()
 	_ = ap.OnResize() // initial draw.
 	ap.MoveCursor(0, ap.H-1)
 	ap.SaveCursorPos() // Ticks save cursor to prepare for where we want it on exit.
@@ -154,8 +155,15 @@ func (st *State) Tick() bool {
 		st.RepaintAll()
 		st.ResetSolver()
 	case 'P', 'p', 'S', 's':
-		st.showPath = true
+		st.showPath = !st.showPath
+		if st.showPath {
+			st.ap.WriteString(tcolor.BrightGreen.Foreground())
+		}
+	case 'r', 'R':
+		st.showPath = false
+		st.RepaintAll()
 		st.ResetSolver()
+
 	default:
 		// Regen a new maze on any other key
 		_ = st.ap.OnResize()
