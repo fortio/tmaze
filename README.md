@@ -44,7 +44,9 @@ Hit 'S' to solve the maze from the beginning (solver animation speed is controll
 
 Hit 'P' (pause) to pause/unpause the current solver animation's progress.
 
-Solver animation looks like:
+Hit 'R' to reset the maze to unsolved state.
+
+Solved maze looks like:
 
 ![Solver Screenshot](solver.png)
 
