@@ -150,8 +150,8 @@ func (st *State) Tick() bool {
 	case 'P', 'p':
 		st.showPath = !st.showPath
 	case 'S', 's':
-		st.RepaintAll()
 		st.showPath = true
+		st.RepaintAll()
 
 	case 'r', 'R':
 		st.showPath = false
