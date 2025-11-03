@@ -74,7 +74,6 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		st.RepaintAll()
-		st.ResetSolverState()
 		ap.EndSyncMode()
 		return nil
 	}
