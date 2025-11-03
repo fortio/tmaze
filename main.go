@@ -105,6 +105,7 @@ func (st *State) RepaintAll() {
 		}
 	}
 	st.ap.WriteString(tcolor.BrightGreen.Foreground())
+	st.ResetSolverState()
 }
 
 func (st *State) drawPath() {
@@ -146,18 +147,15 @@ func (st *State) Tick() bool {
 	case 'c', 'C':
 		st.mono = !st.mono
 		st.RepaintAll()
-		st.ResetSolverState()
 	case 'P', 'p':
 		st.showPath = !st.showPath
 	case 'S', 's':
 		st.RepaintAll()
-		st.ResetSolverState()
 		st.showPath = true
 
 	case 'r', 'R':
 		st.showPath = false
 		st.RepaintAll()
-		st.ResetSolverState()
 
 	default:
 		// Regen a new maze on any other key
