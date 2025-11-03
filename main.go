@@ -109,9 +109,6 @@ func (st *State) RepaintAll() {
 
 func (st *State) ResetSolver() {
 	st.ResetSolverState()
-	if st.showPath {
-		st.ap.WriteString(tcolor.BrightGreen.Foreground())
-	}
 }
 
 func (st *State) drawPath() {
