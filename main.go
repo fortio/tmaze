@@ -74,7 +74,6 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		st.RepaintAll()
-		st.ResetSolver()
 		ap.EndSyncMode()
 		return nil
 	}
@@ -104,13 +103,9 @@ func (st *State) RepaintAll() {
 			st.ap.WriteRune(st.maze[l][c].Rune())
 		}
 	}
-}
-
-func (st *State) ResetSolver() {
 	st.ResetSolverState()
-	if st.showPath {
-		st.ap.WriteString(tcolor.BrightGreen.Foreground())
-	}
+	// Prepare for eventual maze solving (including if we're already in solving mode etc)
+	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 }
 
 func (st *State) drawPath() {
@@ -152,10 +147,14 @@ func (st *State) Tick() bool {
 	case 'c', 'C':
 		st.mono = !st.mono
 		st.RepaintAll()
-		st.ResetSolver()
-	case 'P', 'p', 'S', 's':
+	case 'P', 'p':
+		st.showPath = !st.showPath
+	case 'S', 's':
 		st.showPath = true
-		st.ResetSolver()
+		st.RepaintAll()
+	case 'r', 'R':
+		st.showPath = false
+		st.RepaintAll()
 	default:
 		// Regen a new maze on any other key
 		_ = st.ap.OnResize()
