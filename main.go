@@ -32,6 +32,7 @@ type State struct {
 	mono            bool
 	newlines        bool
 	showPath        bool
+	pause           bool
 	width           int
 	height          int
 	maze            [][]Walls
@@ -137,7 +138,7 @@ func (st *State) EmitColor() {
 }
 
 func (st *State) Tick() bool {
-	if st.showPath {
+	if st.showPath && !st.pause {
 		st.drawPath()
 	}
 	if len(st.ap.Data) == 0 {
@@ -151,10 +152,18 @@ func (st *State) Tick() bool {
 		st.mono = !st.mono
 		st.RepaintAll()
 		st.ResetSolver()
-	case 'P', 'p', 'S', 's':
-		st.showPath = !st.showPath
+	case 'P', 'p':
+		st.pause = !st.pause
+		st.showPath = true
+	case 'S', 's':
+		st.RepaintAll()
+		st.ResetSolver()
+		st.showPath = true
+		st.pause = false
+
 	case 'r', 'R':
 		st.showPath = false
+		st.pause = true
 		st.RepaintAll()
 		st.ResetSolver()
 
