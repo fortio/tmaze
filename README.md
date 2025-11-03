@@ -40,8 +40,11 @@ In color ('C' key to toggle):
 
 ![Screenshot](screenshot.png)
 
+Hit 'S' to solve the maze from the beginning (solver animation speed is controlled by `-fps` flag) 
 
-Hit 'P' (path) or 'S' to solve the maze (solver animation speed is controlled by `-fps` flag):
+Hit 'P' (pause) to pause/unpause the current solver animation's progress.
+
+Solver animation looks like:
 
 ![Solver Screenshot](solver.png)
 
