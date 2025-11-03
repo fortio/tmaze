@@ -103,8 +103,8 @@ func (st *State) RepaintAll() {
 			st.ap.WriteRune(st.maze[l][c].Rune())
 		}
 	}
-	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 	st.ResetSolverState()
+	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 }
 
 func (st *State) drawPath() {
