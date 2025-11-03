@@ -157,8 +157,6 @@ func (st *State) Tick() bool {
 		st.RepaintAll()
 	default:
 		// Regen a new maze on any other key
-	default:
-		// Regen a new maze on any other key
 		_ = st.ap.OnResize()
 	}
 	return true
