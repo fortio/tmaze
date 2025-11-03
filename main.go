@@ -81,6 +81,7 @@ func Main() int {
 	_ = ap.OnResize() // initial draw.
 	ap.MoveCursor(0, ap.H-1)
 	ap.SaveCursorPos() // Ticks save cursor to prepare for where we want it on exit.
+	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 	err := ap.FPSTicks(st.Tick)
 	if err != nil {
 		log.Infof("Exiting on %v", err)
@@ -104,6 +105,7 @@ func (st *State) RepaintAll() {
 			st.ap.WriteRune(st.maze[l][c].Rune())
 		}
 	}
+	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 }
 
 func (st *State) ResetSolver() {
@@ -155,9 +157,6 @@ func (st *State) Tick() bool {
 		st.ResetSolver()
 	case 'P', 'p', 'S', 's':
 		st.showPath = !st.showPath
-		if st.showPath {
-			st.ap.WriteString(tcolor.BrightGreen.Foreground())
-		}
 	case 'r', 'R':
 		st.showPath = false
 		st.RepaintAll()
