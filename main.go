@@ -81,7 +81,6 @@ func Main() int {
 	_ = ap.OnResize() // initial draw.
 	ap.MoveCursor(0, ap.H-1)
 	ap.SaveCursorPos() // Ticks save cursor to prepare for where we want it on exit.
-	st.ap.WriteString(tcolor.BrightGreen.Foreground())
 	err := ap.FPSTicks(st.Tick)
 	if err != nil {
 		log.Infof("Exiting on %v", err)
