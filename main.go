@@ -152,11 +152,9 @@ func (st *State) Tick() bool {
 	case 'S', 's':
 		st.showPath = true
 		st.RepaintAll()
-
 	case 'r', 'R':
 		st.showPath = false
 		st.RepaintAll()
-
 	default:
 		// Regen a new maze on any other key
 		_ = st.ap.OnResize()
