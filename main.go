@@ -74,7 +74,7 @@ func Main() int {
 		ap.ClearScreen()
 		ap.StartSyncMode()
 		st.RepaintAll()
-		st.ResetSolver()
+		st.ResetSolverState()
 		ap.EndSyncMode()
 		return nil
 	}
@@ -105,10 +105,6 @@ func (st *State) RepaintAll() {
 		}
 	}
 	st.ap.WriteString(tcolor.BrightGreen.Foreground())
-}
-
-func (st *State) ResetSolver() {
-	st.ResetSolverState()
 }
 
 func (st *State) drawPath() {
@@ -150,18 +146,18 @@ func (st *State) Tick() bool {
 	case 'c', 'C':
 		st.mono = !st.mono
 		st.RepaintAll()
-		st.ResetSolver()
+		st.ResetSolverState()
 	case 'P', 'p':
 		st.showPath = !st.showPath
 	case 'S', 's':
 		st.RepaintAll()
-		st.ResetSolver()
+		st.ResetSolverState()
 		st.showPath = true
 
 	case 'r', 'R':
 		st.showPath = false
 		st.RepaintAll()
-		st.ResetSolver()
+		st.ResetSolverState()
 
 	default:
 		// Regen a new maze on any other key
